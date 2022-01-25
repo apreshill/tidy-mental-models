@@ -186,6 +186,16 @@ Step 6: Teaching remotely (https://www.apreshill.com/blog/2020-06-how-i-taught-t
 
 + Lots of .emphasis[methods] (randomness + resampling)
 
+
+---
+class: inverse, middle, center
+
+## v1
+
+https://www.apreshill.com/blog/2020-02-take-a-sad-script-make-it-better-tidymodels-edition/
+
+## `r emo::ji("see_no_evil")``r emo::ji("hear_no_evil")``r emo::ji("speak_no_evil")`
+
 ---
 
 ## What worked (for me)
@@ -287,7 +297,10 @@ background-color: #fff
 + If time constrained, transition quickly from decision trees to random forests
 
 
+---
+class: inverse, middle, center
 
+## Visualizing models
 
 ---
 class: middle
@@ -428,6 +441,11 @@ rt_pred_plot <-
 
 rt_pred_plot
 ```
+
+---
+class: inverse, middle, center
+
+## Visualizing concepts
 
 ---
 class: middle, center
