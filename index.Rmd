@@ -1,0 +1,701 @@
+---
+title: "Tidy your mental models"
+author: Alison Hill
+role: Senior Data Scientist
+org: "AI Strategy & Innovation @IBM"
+date: "2022-01-25"
+output:
+  xaringan::moon_reader:
+    anchor_sections: FALSE
+    css: ["default", "css/theme.css", "css/fonts.css"]
+    seal: false 
+    lib_dir: libs
+    nature:
+      slideNumberFormat: |
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: calc(%current% / %total% * 100%);">
+          </div>
+        </div>
+      highlightStyle: solarized-light
+      highlightLanguage: ["r", "css", "yaml"]
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+
+
+class: title-slide, left, middle
+background-image: url("img/warning.jpg")
+background-size: contain
+background-position: right
+background-color: #F9F8F3
+
+```{r setup, include=FALSE}
+library(tidymodels)
+library(tidyverse)
+library(ggplot2)
+library(scico)
+library(palmerpenguins)
+penguins <- penguins %>%
+    filter(complete.cases(flipper_length_mm, body_mass_g, species, sex))
+theme_set(theme_minimal())
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(comment = "#",
+                      message = FALSE,
+                      warning = FALSE, 
+                      collapse = TRUE,
+                      fig.retina = 3,
+                      fig.align = 'center',
+                      R.options = list(tibble.max_extra_cols=5, 
+                                       tibble.print_max=5, 
+                                       tibble.width=60))
+# for figures
+train_color <- "#1a162d"
+test_color  <- "#cd4173"
+data_color  <- "#767381"
+assess_color <- "#84cae1"
+splits_pal <- c(data_color, train_color, test_color)
+```
+
+
+.pull-left[
+
+# `r rmarkdown::metadata$title`
+
+### `r rmarkdown::metadata$author`, Ph.D.
+
+### `r rmarkdown::metadata$org`
+
+### `r rmarkdown::metadata$date`
+]
+
+
+---
+class: middle, center, inverse
+
+## .big-text[Hello.]
+
+
+---
+name: hello
+class: middle, center, inverse
+
+
+### `r rmarkdown::metadata$author`
+
+<img style="border-radius: 50%;" src="img/mint_disney.jpg" width="200px"/>
+
+### `r rmarkdown::metadata$role`
+
+### `r rmarkdown::metadata$org`
+
+[`r fontawesome::fa("github")` @apreshill](https://github.com/apreshill)    
+[`r fontawesome::fa("twitter")` @apreshill](https://twitter.com/apreshill)   
+[`r fontawesome::fa("link")` apreshill.com](https://www.apreshill.com)
+
+
+
+---
+background-image: url(img/dragons-1.jpg)
+background-size: cover
+
+
+---
+background-image: url(img/dragons-2.jpg)
+background-size: cover
+
+
+
+---
+background-image: url(img/code-1.jpg)
+background-size: contain
+background-position: right
+background-color: #fff
+
+---
+background-image: url(img/code-2.jpg)
+background-size: contain
+background-position: right
+background-color: #fff
+
+---
+
+## Teaching tidymodels
+
+--
+
++ [tidymodels.org](https://www.tidymodels.org/)
+
++ Società Italiana di Statistica Medica ed Epidemiologia Clinica Virtual Conference (2021)
+
++ R / Medicine Virtual Conference (2020)
+
++ Becton, Dickinson and Company, Online (2020)
+
++ Children’s Hospital of Philadelphia, Online (2020)
+
++ rstudio::conf 2020, San Francisco, CA, January 27 & 28 Training Days (2020)
+
+
+---
+
+## Timeline
+
+--
+
+Step 1: Learn tidymodels (~2 months)
+
+--
+
+Step 2: Design a 2-day workshop (~2 months)
+
+--
+
+Step 3: Teach it! (December 2019)
+
+--
+
+Step 4: Teach it again! (January 2020)
+
+--
+
+Step 5: Develop tidymodels.org (April 2020)
+
+--
+
+Step 6: Teaching remotely (https://www.apreshill.com/blog/2020-06-how-i-taught-tidymodels-virtually/)
+
+---
+
+## What is hard about learning (and teaching) tidymodels?
+
+--
+
++ Lots of .emphasis[packages] (to `::` or not to `::`?)
+
+--
+
++ Lots of .emphasis[models] (stats background?)
+
+--
+
++ Lots of .emphasis[concepts] (some = code; others = invisible)
+
+--
+
++ Lots of .emphasis[methods] (randomness + resampling)
+
+---
+
+## What worked (for me)
+
+--
+
++ My learner personas (+ their ?)
+
+--
+
++ Sequencing (roughly)
+
+--
+
++ Pacing (roughly)
+
+--
+
++ Scoping
+
+--
+
++ Bite-sized, timed exercises ("No code chunk left blank!")
+
+--
+
++ Switching back-and-forth between datasets (surprise!)
+
+
+---
+background-image: url(img/table-0.jpg)
+background-size: contain
+background-color: #fff
+
+---
+background-image: url(img/table-1.jpg)
+background-size: contain
+background-color: #fff
+
+---
+background-image: url(img/table-2.jpg)
+background-size: contain
+background-color: #fff
+
+---
+background-image: url(img/table-3.jpg)
+background-size: contain
+background-color: #fff
+
+---
+background-image: url(img/table-4.jpg)
+background-size: contain
+background-color: #fff
+
+---
+background-image: url(img/table-0.jpg)
+background-size: contain
+background-color: #fff
+
+---
+background-image: url(img/table-6.jpg)
+background-size: contain
+background-color: #fff
+
+
+---
+background-image: url(img/table-7.jpg)
+background-size: contain
+background-color: #fff
+
+---
+background-image: url(img/table-8.jpg)
+background-size: contain
+background-color: #fff
+
+---
+background-image: url(img/table-9.jpg)
+background-size: contain
+background-color: #fff
+
+---
+
+## Lessons learned
+
+--
+
++ Give folks a "whole game" split-to-fit-to-tune case study at the end
+
+--
+
++ Workflows is a dry package; use recipes to spice it up earlier
+
+--
+
++ Cross-validation and tuning are like PB+J, so teach it like that
+
+--
+
++ If time constrained, transition quickly from decision trees to random forests
+
+
+
+
+---
+class: middle
+
+.pull-left[
+
+```{r}
+# pick model #<<
+lm_mod <- #<<
+  parsnip::linear_reg(engine = "lm") %>% #<<
+  parsnip::set_mode("regression") #<<
+
+lm_mod %>% 
+  fit(body_mass_g ~ flipper_length_mm, 
+      data = penguins) 
+```
+
+]
+
+.pull-right[
+```{r penguins-lm, echo=FALSE}
+ggplot(penguins, aes(flipper_length_mm, body_mass_g)) +
+  geom_smooth(method = "lm", se = FALSE, colour = "#9dc7e1") +
+  geom_point(size = 3, alpha = .3) +
+  geom_point(aes(flipper_length_mm, fitted(lm(body_mass_g ~ flipper_length_mm))),
+             color = "#CA225E",
+             size = 3) +
+  theme(text = element_text(family = "Atkinson Hyperlegible"))
+```
+
+]
+
+---
+class: middle
+
+.pull-left[
+
+```{r}
+# pick model #<<
+rt_mod <- #<<
+  parsnip::decision_tree(engine = "rpart") %>% #<<
+  parsnip::set_mode("regression") #<<
+
+rt_mod %>% 
+  fit(body_mass_g ~ flipper_length_mm, 
+      data = penguins)
+```
+
+]
+
+
+--
+
+.pull-right[
+```{r penguins-rt, echo=FALSE}
+rt_preds <- rt_mod %>% 
+  fit(body_mass_g ~ flipper_length_mm, data = penguins) %>% 
+  predict(new_data = penguins) %>% 
+  mutate(weight_truth = penguins$body_mass_g)
+
+ggplot(penguins, aes(flipper_length_mm, body_mass_g)) +
+  geom_line(aes(x=flipper_length_mm, y = rt_preds$.pred), colour="#9dc7e1", size=2) +
+  geom_point(size = 3, alpha = .3) +
+  geom_point(aes(flipper_length_mm, rt_preds$.pred),
+             color = "#CA225E",
+             size = 3) +
+  theme(text = element_text(family = "Atkinson Hyperlegible"))
+```
+
+]
+
+---
+```{r include=FALSE}
+rt_spec <- 
+  decision_tree(engine = "rpart") %>% 
+  set_mode("regression")
+
+set.seed(1)
+
+small_peng <- penguins %>% 
+  mutate(.row = dplyr::row_number())
+
+small_split  <- initial_split(small_peng)
+small_train  <- training(small_split)
+small_test   <- testing(small_split)
+
+rt_fitwf <- 
+  rt_spec %>% 
+  last_fit(body_mass_g ~ flipper_length_mm, 
+           split = small_split)
+
+rt_fit <- rt_fitwf %>% 
+  pluck(".workflow", 1) %>% 
+  extract_fit_parsnip() %>% 
+  .$fit
+
+splt <- rt_fit$splits %>% 
+  as_tibble(.) %>% 
+  mutate(order = dplyr::row_number()) 
+```
+
+
+
+```{r echo = FALSE, fig.align='center'}
+ggplot(small_train, aes(x = flipper_length_mm, y = body_mass_g)) + 
+  geom_point(size = 3) +
+  geom_vline(data=splt, 
+             aes(xintercept = index, 
+                 colour=factor(order)), 
+             lwd = 5, 
+             alpha = .7) + 
+  geom_text(data=splt, aes(x=index, 
+                           y=min(small_train$body_mass_g), 
+                           label=order)) +
+  scale_x_continuous(breaks=seq(-0.5, 0.5, 0.1)) +
+  scale_colour_scico_d(palette = "buda", end = .8) +
+  theme(legend.position="none", 
+        text = element_text(family = "Atkinson Hyperlegible")) 
+```
+
+---
+
+```{r echo = FALSE, fig.align='center', message = FALSE, warning = FALSE}
+rt_preds <- rt_fitwf %>% 
+  collect_predictions() %>% 
+  left_join(select(small_test, .row, flipper_length_mm)) 
+
+rt_pred_plot <-
+  ggplot(rt_preds) + 
+  geom_point(aes(x=flipper_length_mm, y=body_mass_g), size = 3) +
+  geom_line(aes(x=flipper_length_mm, y=.pred), colour="#4D8DC9", size=2) +
+  geom_vline(data=splt, aes(xintercept = index, colour=factor(order)), 
+             lwd = 5, 
+             alpha = .7) +
+  scale_colour_scico_d(palette = "buda", end = .8) +
+  theme(legend.position="none", 
+        text = element_text(family = "Atkinson Hyperlegible")) 
+
+rt_pred_plot
+```
+
+---
+class: middle, center
+background-color: #fff
+
+```{r all-split, echo = FALSE, fig.width = 12, fig.height = 3}
+set.seed(16)
+one_split <- slice(penguins, 1:30) %>% 
+  initial_split() %>% 
+  tidy() %>% 
+  add_row(Row = 1:30, Data = "Original") %>% 
+  mutate(Data = case_when(
+    Data == "Analysis" ~ "Training",
+    Data == "Assessment" ~ "Testing",
+    TRUE ~ Data
+  )) %>% 
+  mutate(Data = factor(Data, levels = c("Original", "Training", "Testing")))
+
+all_split <-
+  ggplot(one_split, aes(x = Row, y = fct_rev(Data), fill = Data)) + 
+  geom_tile(color = "white",
+            size = 1) + 
+  scale_fill_manual(values = splits_pal, guide = "none") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = rel(2)),
+        axis.text.x = element_blank(),
+        legend.position = "top",
+        panel.grid = element_blank(),
+        text = element_text(family = "Atkinson Hyperlegible")) +
+  coord_equal(ratio = 1) +
+  labs(x = NULL, y = NULL)
+
+all_split
+```
+
+---
+exclude: true
+
+```{r include=FALSE}
+plot_split <- function(seed = 1, arrow = FALSE) {
+  set.seed(seed)
+  one_split <- slice(penguins, 1:20) %>% 
+    initial_split() %>% 
+    tidy() %>% 
+    add_row(Row = 1:20, Data = "Original") %>% 
+    mutate(Data = case_when(
+      Data == "Analysis" ~ "Training",
+      Data == "Assessment" ~ "Testing",
+      TRUE ~ Data
+    )) %>% 
+    mutate(Data = factor(Data, levels = c("Original", "Training", "Testing")))
+  
+  both_split <-
+    one_split %>% 
+    filter(!Data == "Original") %>% 
+    ggplot(aes(x = Row, y = 1, fill = Data)) + 
+    geom_tile(color = "white",
+              size = 1) + 
+    scale_fill_manual(values = splits_pal[2:3],
+                       guide = "none") +
+    theme_void() +
+    #theme(plot.margin = unit(c(-1, -1, -1, -1), "mm")) +
+    coord_equal() + {
+    # arrow is TRUE
+    if (arrow == TRUE) 
+      annotate("segment", x = 31, xend = 32, y = 1, yend = 1, 
+               colour = assess_color, size=1, arrow=arrow())
+    } + {
+    # arrow is TRUE
+    if (arrow == TRUE)
+        annotate("text", x = 33.5, y = 1, colour = assess_color, size=8, 
+                 label = "Metric", family="Atkinson Hyperlegible")
+    }
+
+  
+  both_split
+}
+```
+
+---
+class: middle, center
+background-color: #fff
+
+--
+
+```{r echo=FALSE, fig.width = 10, fig.height = .5, fig.align = 'center'}
+plot_split(seed = 100)
+```
+
+--
+
+```{r echo=FALSE, fig.width = 10, fig.height = .5, fig.align = 'center'}
+plot_split(seed = 1)
+```
+
+--
+
+```{r echo=FALSE, fig.width = 10, fig.height = .5, fig.align = 'center'}
+plot_split(seed = 10)
+```
+
+--
+
+```{r echo=FALSE, fig.width = 10, fig.height = .5, fig.align = 'center'}
+plot_split(seed = 18)
+```
+
+--
+
+```{r echo=FALSE, fig.width = 10, fig.height = .5, fig.align = 'center'}
+plot_split(seed = 30)
+```
+
+--
+
+```{r echo=FALSE, fig.width = 10, fig.height = .5, fig.align = 'center'}
+plot_split(seed = 31)
+```
+
+--
+
+```{r echo=FALSE, fig.width = 10, fig.height = .5, fig.align = 'center'}
+plot_split(seed = 21)
+```
+
+--
+
+```{r echo=FALSE, fig.width = 10, fig.height = .5, fig.align = 'center'}
+plot_split(seed = 321)
+```
+
+
+---
+background-image: url(img/cross-validation/Slide2.png)
+background-size: contain
+
+---
+background-image: url(img/cross-validation/Slide3.png)
+background-size: contain
+
+---
+background-image: url(img/cross-validation/Slide4.png)
+background-size: contain
+
+---
+background-image: url(img/cross-validation/Slide5.png)
+background-size: contain
+
+---
+background-image: url(img/cross-validation/Slide6.png)
+background-size: contain
+
+---
+background-image: url(img/cross-validation/Slide7.png)
+background-size: contain
+
+---
+background-image: url(img/cross-validation/Slide8.png)
+background-size: contain
+
+---
+background-image: url(img/cross-validation/Slide9.png)
+background-size: contain
+
+---
+background-image: url(img/cross-validation/Slide10.png)
+background-size: contain
+
+---
+background-image: url(img/cross-validation/Slide11.png)
+background-size: contain
+
+
+---
+exclude: true
+
+```{r cv, fig.height=4, echo=FALSE}
+set.seed(1)
+folds10 <- slice(penguins, 1:20) %>% 
+  vfold_cv() %>% 
+  tidy() %>% 
+  mutate(split = str_c("Split", str_pad(parse_number(Fold), width = 2, pad = "0")))
+
+folds <- ggplot(folds10, aes(x = Row, y = fct_rev(split), fill = Data)) + 
+  geom_tile(color = "white",
+            width = 1,
+            size = 1) + 
+  scale_fill_manual(values = c(train_color, assess_color)) +
+  theme(axis.text.y = element_blank(),
+        axis.text.x = element_blank(),
+        legend.position = "top",
+        panel.grid = element_blank(),
+        text = element_text(family = "Atkinson Hyperlegible"),
+        legend.key.size = unit(.4, "cm"),
+        legend.text = element_text(size = rel(.4))) +
+  coord_equal() +
+  labs(x = NULL, y = NULL, fill = NULL) 
+```
+
+---
+background-color: #fff
+
+```{r vfold-tiles, echo=FALSE, fig.height=6, fig.width = 12, fig.align='center'}
+folds +
+    theme(axis.text.y = element_text(size = rel(2)),
+          legend.key.size = unit(.85, "cm"),
+          legend.text = element_text(size = rel(1)))
+```
+
+---
+background-color: #fff
+
+```{r echo=FALSE, fig.height=6, fig.width = 12, fig.align='center', warning=FALSE, message=FALSE}
+test_folds <- tibble(
+  Row = seq(1, 20, 1),
+  Data = "assessment",
+  Fold = rep(1:10, each = 2)
+) 
+
+# i want all 20 rows, for all 10 folds
+all_rows <- tibble(
+  Row = rep(seq(1, 20, 1), 10),
+  Fold = rep(1:10, each = 20)
+)
+
+train_folds <- all_rows %>% 
+  anti_join(test_folds)
+
+all_folds <- test_folds %>% 
+  full_join(train_folds) %>% 
+  mutate(Fold = as.factor(Fold)) %>% 
+  mutate(Data = replace_na(Data, "analysis"))
+
+ggplot(all_folds, aes(x = Row, y = fct_rev(Fold), fill = Data)) + 
+  geom_tile(color = "white",
+            width = 1,
+            size = 1) + 
+  scale_fill_manual(values = c(train_color, assess_color), guide = "none") +
+  theme(axis.text.y = element_blank(),
+        axis.text.x = element_blank(),
+        legend.position = "top",
+        panel.grid = element_blank(),
+        text = element_text(family = "Atkinson Hyperlegible"),
+        legend.key.size = unit(.4, "cm"),
+        legend.text = element_text(size = rel(.4))) +
+  coord_equal() +
+  labs(x = NULL, y = NULL, fill = NULL) 
+```
+
+
+
+---
+name: goodbye
+class: bottom
+background-color: #b5efdd
+
+
+.pull-right[
+.right[
+
+<img src="img/mint_disney.jpg" width="200px">
+
+# Thank you!
+
+### Find me at...
+
+[`r fontawesome::fa("twitter")` @apreshill](http://twitter.com/apreshill)  
+[`r fontawesome::fa("github")` @apreshill](http://github.com/apreshill)  
+[`r fontawesome::fa("link")` apreshill.com](https://apreshill.com)  
+]
+]
